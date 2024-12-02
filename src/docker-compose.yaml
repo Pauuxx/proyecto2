@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+  zap:
+    image: zaproxy/zap-stable
+    networks:
+      - app-network
+    volumes:
+      - ./zap-config:/zap/wrk
+    entrypoint: >
+      zap-baseline.py -t http://app:8000 -r /zap/wrk/scan-report.html
+networks:
+  app-network:
+    driver: bridge

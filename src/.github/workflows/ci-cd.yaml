@@ -1,0 +1,38 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build and push Docker image
+        run: |
+          docker-compose build
+          docker-compose up -d
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Run Unit Tests
+        run: |
+          docker-compose exec app pytest
+  dast:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Run OWASP ZAP Scan
+        run: |
+          docker-compose run zap
+          cat zap-config/scan-report.html
+  deploy:
+    runs-on: ubuntu-latest
+    needs: dast
+    steps:
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f deployment/deployment.yaml

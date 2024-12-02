@@ -1,0 +1,11 @@
+groups:
+  - name: pipeline-alerts
+    rules:
+      - alert: PipelineFailed
+        expr: jenkins_builds_failed_total > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fallo en el Pipeline"
+          description: "El pipeline ha fallado más d euna vez en los últimos 5 minutos."

@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment-canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-canary
+  template:
+    metadata:
+      labels:
+        app: app-canary
+    spec:
+      containers:
+        - name: app
+          image: Pauuxx/proyecto2:canary
+          ports:
+            - containerPort: 8080
